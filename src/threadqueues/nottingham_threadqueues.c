@@ -121,7 +121,7 @@ qt_threadqueue_t INTERNAL *qt_threadqueue_new(void)
 {   /*{{{*/
     qt_threadqueue_t *q;
 
-    q = qt_internal_aligned_alloc(64, sizeof(qt_threadqueue_t));
+    q = qt_internal_aligned_alloc(64*sizeof(qt_threadqueue_t), getpagesize());
 
     if (q != NULL) {
         qt_threadqueue_union_t top;
@@ -135,8 +135,8 @@ qt_threadqueue_t INTERNAL *qt_threadqueue_new(void)
         q->empty    = 1;
         q->stealing = 0;
         QTHREAD_FASTLOCK_INIT(q->spinlock);
-        q->base = qt_internal_aligned_alloc(64, q->size * sizeof(m128i));
-        q->rwlock = qt_internal_aligned_alloc(64, sizeof(rwlock_t));
+        q->base = qt_internal_aligned_alloc(64*q->size * sizeof(m128i), getpagesize());
+        q->rwlock = qt_internal_aligned_alloc(64*sizeof(rwlock_t), getpagesize());
         rwlock_init(q->rwlock);
         memset(q->base, 0, q->size * sizeof(m128i));
     }
