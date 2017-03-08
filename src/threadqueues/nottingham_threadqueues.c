@@ -318,8 +318,8 @@ static QINLINE void qt_threadqueue_resize(qt_threadqueue_t *q)
     qt_threadqueue_union_t top;
 
 
-    newloc = qt_internal_aligned_alloc(64, newsize * sizeof(m128i)), 0);
-    qassert(newloc != NULL)
+    newloc = qt_internal_aligned_alloc(64, newsize * sizeof(m128i));
+    qassert(newloc != NULL, 0)
     assert(newsize > oldsize);
     assert(newloc != NULL);
 
