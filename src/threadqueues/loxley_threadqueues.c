@@ -86,7 +86,7 @@ qt_threadqueue_t INTERNAL *qt_threadqueue_new(void)
     int               local_length = qlib->nworkerspershep + 1;
     qt_threadqueue_t *q;
 
-    posix_memalign((void **)&q, 64, sizeof(qt_threadqueue_t));
+    q = qt_internal_aligned_alloc(64, sizeof(qt_threadqueue_t));
 
     if (q != NULL) {
         q->empty    = 1;
@@ -96,7 +96,7 @@ qt_threadqueue_t INTERNAL *qt_threadqueue_new(void)
         QTHREAD_FASTLOCK_INIT(q->steallock);
         q->local = qt_calloc(local_length, sizeof(qt_threadqueue_local_t *));
         for(i = 0; i < local_length; i++) {
-            posix_memalign((void **)&q->local[i], 64, sizeof(qt_threadqueue_local_t));
+            q->local[i] = qt_internal_aligned_alloc(64, sizeof(qt_threadqueue_local_t));
             qt_stack_create(&(q->local[i]->stack), 1024);
             QTHREAD_FASTLOCK_INIT(q->local[i]->lock);
             q->local[i]->bias    = 0;

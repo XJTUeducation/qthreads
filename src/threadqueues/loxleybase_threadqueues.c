@@ -56,7 +56,7 @@ qt_threadqueue_t INTERNAL *qt_threadqueue_new(void)
 {   /*{{{*/
     qt_threadqueue_t *q;
 
-    posix_memalign((void **)&q, 64, sizeof(qt_threadqueue_t));
+    q = qt_internal_aligned_alloc(64, sizeof(qt_threadqueue_t));
 
     if (q != NULL) {
         q->empty    = 1;

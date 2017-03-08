@@ -121,7 +121,7 @@ qt_threadqueue_t INTERNAL *qt_threadqueue_new(void)
 {   /*{{{*/
     qt_threadqueue_t *q;
 
-    posix_memalign((void **)&q, 64, sizeof(qt_threadqueue_t));
+    q = qt_internal_aligned_alloc(64, sizeof(qt_threadqueue_t));
 
     if (q != NULL) {
         qt_threadqueue_union_t top;
@@ -135,8 +135,8 @@ qt_threadqueue_t INTERNAL *qt_threadqueue_new(void)
         q->empty    = 1;
         q->stealing = 0;
         QTHREAD_FASTLOCK_INIT(q->spinlock);
-        posix_memalign((void **)&(q->base), 64, q->size * sizeof(m128i));
-        posix_memalign((void **)&(q->rwlock), 64, sizeof(rwlock_t));
+        q->base = qt_internal_aligned_alloc(64, q->size * sizeof(m128i));
+        q->rwlock = qt_internal_aligned_alloc(64, sizeof(rwlock_t));
         rwlock_init(q->rwlock);
         memset(q->base, 0, q->size * sizeof(m128i));
     }
@@ -317,8 +317,9 @@ static QINLINE void qt_threadqueue_resize(qt_threadqueue_t *q)
     m128i                 *newloc;
     qt_threadqueue_union_t top;
 
-    qassert(posix_memalign((void **)&(newloc), 64, newsize * sizeof(m128i)), 0);
 
+    newloc = qt_internal_aligned_alloc(64, newsize * sizeof(m128i)), 0);
+    qassert(newloc != NULL)
     assert(newsize > oldsize);
     assert(newloc != NULL);
 
